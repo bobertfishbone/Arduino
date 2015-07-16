@@ -1,13 +1,13 @@
-#define homebutton 0
-#define menubutton 1
-#define leftbutton 2
-#define rightbutton 3
-#define upbutton 4
-#define downbutton 5
+#define homebutton 2
+#define menubutton 3
+#define leftbutton 4
+#define rightbutton 5
+#define upbutton 6
+#define downbutton 7
 
-#define buttonup 6
-#define buttondown 7
-#define buttonselect 8
+#define buttonup 8
+#define buttondown 9
+#define buttonselect 10
 
 unsigned int numSteps = 0;
 unsigned int hours = 0;
@@ -29,6 +29,10 @@ pinMode(leftbutton, OUTPUT);
 pinMode(rightbutton, OUTPUT);
 pinMode(upbutton, OUTPUT);
 pinMode(downbutton, OUTPUT);
+
+pinMode(buttonup, INPUT_PULLUP);
+pinMode(buttondown, INPUT_PULLUP);
+pinMode(buttonselect, INPUT_PULLUP);
 
 digitalWrite(homebutton, LOW);
 digitalWrite(menubutton, LOW);
@@ -67,6 +71,13 @@ for (int i = 0; i < numSteps; i++) {
     bool spaceHog = true;
   }
 }
+digitalWrite(homebutton, HIGH);
+digitalWrite(menubutton, HIGH);
+digitalWrite(leftbutton, HIGH);
+digitalWrite(rightbutton, HIGH);
+digitalWrite(upbutton, HIGH);
+digitalWrite(downbutton, HIGH);
+delay(9999999999999999999999);
 }
 
 void changeSetPoint(int degrees){
@@ -106,21 +117,26 @@ int getNumber(int digits) {
 
   for (int i = digits; i >= 1; i--)
   {
+    Serial.println("I'M IN THE FOR LOOP NOW");
     while (digitalRead(buttonselect) == HIGH) {
+      //Serial.println("BUTTONSELECT IS HIGH");
       if (digitalRead(buttonup) == LOW) {
+        Serial.println("BUTTONUP IS LOW!");
         digit[i]++;
         Serial.print(digit[i]);
-        delay(150);
+        delay(250);
       }
-      else if (digitalRead(buttondown) == HIGH) {
+      /*else if (digitalRead(buttondown) == HIGH) {
         digit[i]--;
         Serial.print(digit[i]);
         delay(150);
-      }
+      }*/
     }
-    delay(150);
+    delay(250);
   }
-  int returnval = (digit[1]*100) + (digit[2] * 10) + digit[3];
+  int returnval = (digit[3]*100) + (digit[2] * 10) + digit[1];
+  Serial.print("RETURNIN!!! ");
+  Serial.println(returnval);
   return returnval;
 }
 
