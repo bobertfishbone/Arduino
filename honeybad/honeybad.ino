@@ -9,11 +9,11 @@
 #define buttondown 9
 #define buttonselect 10
 
-unsigned int numSteps = 0;
-unsigned int hours = 0;
-unsigned int minutes = 0;
+int numSteps = 0;
+int hours = 0;
+ int minutes = 0;
 
-unsigned int myTemp[10];
+int myTemp[10];
 long stageDuration[10];
 
 long startTime;
@@ -51,7 +51,7 @@ for (int i = 1; i <= numSteps; i++) {
 
   Serial.print("Duration (mins) for stg ");
   Serial.println(i);
-  stageDuration[i] = getNumber(3) * 60000;
+  stageDuration[i] = getNumber(3) * 20000;
 }
 
 startTime = millis();
@@ -59,10 +59,18 @@ startTime = millis();
 
 void loop() {
   // put your main code here, to run repeatedly:
-for (int i = 0; i < numSteps; i++) {
+for (int i = 1; i <= numSteps; i++) {
   stageStart = millis();
-
-  if (i > 0) {
+  Serial.print("Starting stage ");
+  Serial.println(i);
+  Serial.print("Temp ");
+  Serial.print(myTemp[i]);
+  Serial.print("   Duration ");
+  Serial.println(stageDuration[i]);
+  
+  if (i > 1) {
+    Serial.print("Changing by ");
+    Serial.println(myTemp[i] - myTemp[i-1]);
     changeSetPoint(myTemp[i] - myTemp[i-1]);
     }
 
@@ -81,27 +89,34 @@ delay(9999999999999999999999);
 }
 
 void changeSetPoint(int degrees){
-  pushButton(menubutton, 1);
   Serial.println("Pushing menu");
+  pushButton(menubutton, 1);
+  Serial.println("Pushing right");
     pushButton(rightbutton, 1);
-    Serial.println("Pushing right");
+    
     if (degrees > 0){
+      Serial.println("Pushing up");
   pushButton(upbutton, degrees);
     }
-    else pushButton(downbutton, degrees);
-  Serial.println("Pushing up/down");
+    else {
+      Serial.println("Pushing down");
+      pushButton(downbutton, degrees*-1);
+      }
   goHome();
 }
 
 void goHome() {
+  Serial.println("GOING HOME");
   pushButton(homebutton, 1);
 }
 
 void pushButton(int button, int times){
   for (int i = 1; i<=times; i++){
   long time1 = millis();
+  Serial.println("PUSH!");
   while(millis() < time1+250){
   digitalWrite(button, HIGH);
+  
   }
   while (millis() < time1+500){
     digitalWrite(button, LOW);
@@ -111,19 +126,22 @@ void pushButton(int button, int times){
 
 int getNumber(int digits) {
   int digit[3] = {0, 0, 0};
-  Serial.print(digit[1]);
-  Serial.print(digit[2]);
-  Serial.println(digit[3]);
-
+  
   for (int i = digits; i >= 1; i--)
   {
-    Serial.println("I'M IN THE FOR LOOP NOW");
+    
     while (digitalRead(buttonselect) == HIGH) {
       //Serial.println("BUTTONSELECT IS HIGH");
       if (digitalRead(buttonup) == LOW) {
-        Serial.println("BUTTONUP IS LOW!");
+        //Serial.println("BUTTONUP IS LOW!");
         digit[i]++;
-        Serial.print(digit[i]);
+        if (digit[i] < 0) {
+          digit[i] = 9;
+        }
+        else if (digit[i] > 9) {
+          digit[i] = 0;
+        }
+        Serial.println(digit[i]);
         delay(250);
       }
       /*else if (digitalRead(buttondown) == HIGH) {
@@ -134,8 +152,12 @@ int getNumber(int digits) {
     }
     delay(250);
   }
+  Serial.println(digit[1]);
+  Serial.println(digit[2]);
+  Serial.println(digit[3]);
+  
   int returnval = (digit[3]*100) + (digit[2] * 10) + digit[1];
-  Serial.print("RETURNIN!!! ");
+  //Serial.print("RETURNIN!!! ");
   Serial.println(returnval);
   return returnval;
 }
