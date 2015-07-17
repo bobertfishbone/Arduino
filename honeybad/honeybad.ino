@@ -1,3 +1,5 @@
+#include <LiquidCrystal.h>
+
 #define homebutton 2
 #define menubutton 3
 #define leftbutton 4
@@ -19,8 +21,10 @@ long stageDuration[10];
 long startTime;
 long stageStart;
 
+LiquidCrystal lcd(41, 40, 39, 38, 37, 36);
 
 void setup() {
+  lcd.begin(16,2);
 Serial.begin(9600);
 
 pinMode(homebutton, OUTPUT);
@@ -41,16 +45,22 @@ digitalWrite(rightbutton, LOW);
 digitalWrite(upbutton, LOW);
 digitalWrite(downbutton, LOW);
 
-Serial.println("How many stages?");
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("How many stages?");
 numSteps = getNumber(1);
 
 for (int i = 1; i <= numSteps; i++) {
-  Serial.print("Setpoint for stg ");
-  Serial.println(i);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Setpoint for stg ");
+  lcd.print(i);
   myTemp[i] = getNumber(3);
 
-  Serial.print("Duration (mins) for stg ");
-  Serial.println(i);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Duration (mins) for stg ");
+  lcd.print(i);
   stageDuration[i] = getNumber(3) * 20000;
 }
 
@@ -69,8 +79,10 @@ for (int i = 1; i <= numSteps; i++) {
   Serial.println(stageDuration[i]);
   
   if (i > 1) {
-    Serial.print("Changing by ");
-    Serial.println(myTemp[i] - myTemp[i-1]);
+      lcd.clear();
+  lcd.setCursor(0,0);
+    lcd.print("Changing by ");
+    lcd.print(myTemp[i] - myTemp[i-1]);
     changeSetPoint(myTemp[i] - myTemp[i-1]);
     }
 
@@ -86,6 +98,9 @@ digitalWrite(rightbutton, HIGH);
 digitalWrite(upbutton, HIGH);
 digitalWrite(downbutton, HIGH);
 delay(9999999999999999999999);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("DONE");
 }
 
 void changeSetPoint(int degrees){
@@ -126,7 +141,7 @@ void pushButton(int button, int times){
 
 int getNumber(int digits) {
   int digit[3] = {0, 0, 0};
-  
+  lcd.setCursor(
   for (int i = digits; i >= 1; i--)
   {
     
@@ -141,7 +156,8 @@ int getNumber(int digits) {
         else if (digit[i] > 9) {
           digit[i] = 0;
         }
-        Serial.println(digit[i]);
+        lcd.setCursor(i, 1);
+        lcd.print(digit[i]);
         delay(250);
       }
       /*else if (digitalRead(buttondown) == HIGH) {
@@ -156,7 +172,7 @@ int getNumber(int digits) {
   Serial.println(digit[2]);
   Serial.println(digit[3]);
   
-  int returnval = (digit[3]*100) + (digit[2] * 10) + digit[1];
+  int returnval = (digit[1]*100) + (digit[2] * 10) + digit[3];
   //Serial.print("RETURNIN!!! ");
   Serial.println(returnval);
   return returnval;
