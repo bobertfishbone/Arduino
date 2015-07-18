@@ -1,15 +1,26 @@
+#include <Wire.h>
+
 #include <LiquidCrystal.h>
 
-#define homebutton 2
-#define menubutton 3
-#define leftbutton 4
-#define rightbutton 5
-#define upbutton 6
-#define downbutton 7
+#define homebutton 16
+#define menubutton 17
+#define leftbutton 18
+#define rightbutton 19
+#define upbutton 20
+#define downbutton 21
 
-#define buttonup 8
-#define buttondown 9
-#define buttonselect 10
+#define buttonup A6
+#define buttondown A5
+#define buttonselect A7
+
+#define RS 46
+#define enable 47
+#define D4 42
+#define D5 43
+#define D6 44
+#define D7 45
+
+
 
 int numSteps = 0;
 int hours = 0;
@@ -21,7 +32,7 @@ long stageDuration[10];
 long startTime;
 long stageStart;
 
-LiquidCrystal lcd(41, 40, 39, 38, 37, 36);
+LiquidCrystal lcd(RS, enable, D4, D5, D6, D7);
 
 void setup() {
   lcd.begin(16,2);
@@ -141,7 +152,7 @@ void pushButton(int button, int times){
 
 int getNumber(int digits) {
   int digit[3] = {0, 0, 0};
-  lcd.setCursor(
+  lcd.setCursor(0,0);
   for (int i = digits; i >= 1; i--)
   {
     
