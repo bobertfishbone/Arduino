@@ -157,13 +157,13 @@ void pushButton(int button, int times) {
   }
 }
 
-int getNumber(unsigned int digits) {
+int getNumber(int digits) {
   int digit[4] = {0, 0, 0, 0};
 
   lcd.setCursor(0,1);
   lcd.print("000");
 
-  for (unsigned int i = digits; i >= 1; i--)
+  for (int i = digits; i >= 1; i--)
   {
 
 
@@ -211,7 +211,7 @@ int getNumber(unsigned int digits) {
   Serial.println(digit[2]);
   Serial.print("1: ");
   Serial.println(digit[1]);
-  unsigned int returnval = (digit[3] * 100) + (digit[2] * 10) + digit[1];
+  int returnval = (digit[3] * 100) + (digit[2] * 10) + digit[1];
   //Serial.print("RETURNIN!!! ");
   Serial.println(returnval);
   return returnval;
