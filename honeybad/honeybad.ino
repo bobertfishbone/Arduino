@@ -21,12 +21,11 @@
 #define D7 45
 
 
+long numSteps = 0;
+unsigned int hours = 0;
+unsigned int minutes = 0;
 
-int numSteps = 0;
-int hours = 0;
-int minutes = 0;
-
-int myTemp[10];
+long myTemp[10];
 long stageDuration[10];
 
 long startTime;
@@ -85,6 +84,16 @@ void loop() {
   // put your main code here, to run repeatedly:
   for (int i = 1; i <= numSteps; i++) {
     
+    
+
+    if (i > 1) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Changing by ");
+      lcd.print(myTemp[i] - myTemp[i - 1]);
+      changeSetPoint(myTemp[i] - myTemp[i - 1]);
+    }
+
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Starting stage ");
@@ -94,18 +103,13 @@ void loop() {
     lcd.print(myTemp[i]);
     Serial.print("   Duration ");
     Serial.println(stageDuration[i]);
-
-    if (i > 1) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Changing by ");
-      lcd.print(myTemp[i] - myTemp[i - 1]);
-      changeSetPoint(myTemp[i] - myTemp[i - 1]);
-    }
     stageStart = millis();
     while ((millis() - stageStart) < stageDuration[i])
     {
-      bool spaceHog = true;
+      lcd.setCursor(9,1);
+      lcd.print((millis() - stageStart)/1000);
+      lcd.print("/");
+      lcd.print(stageDuration[i]/1000);
     }
   }
   digitalWrite(homebutton, HIGH);
@@ -157,13 +161,13 @@ void pushButton(int button, int times) {
   }
 }
 
-int getNumber(int digits) {
-  int digit[4] = {0, 0, 0, 0};
+long getNumber(unsigned int digits) {
+  long digit[4] = {0, 0, 0, 0};
 
   lcd.setCursor(0,1);
   lcd.print("000");
 
-  for (int i = digits; i >= 1; i--)
+  for (unsigned int i = digits; i >= 1; i--)
   {
 
 
@@ -211,7 +215,7 @@ int getNumber(int digits) {
   Serial.println(digit[2]);
   Serial.print("1: ");
   Serial.println(digit[1]);
-  int returnval = (digit[3] * 100) + (digit[2] * 10) + digit[1];
+  long returnval = (digit[3] * 100) + (digit[2] * 10) + digit[1];
   //Serial.print("RETURNIN!!! ");
   Serial.println(returnval);
   return returnval;
