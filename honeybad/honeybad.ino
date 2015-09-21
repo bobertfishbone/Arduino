@@ -2,12 +2,12 @@
 
 #include <LiquidCrystal.h>
 
-#define homebutton 16
-#define menubutton 17
-#define leftbutton 18
-#define rightbutton 19
-#define upbutton 20
-#define downbutton 21
+#define homebutton 24
+#define menubutton 27
+#define leftbutton 26
+#define rightbutton 25
+#define upbutton 23
+#define downbutton 22
 
 #define buttonup A6
 #define buttondown A5
@@ -24,7 +24,7 @@
 long numSteps = 0;
 unsigned int hours = 0;
 unsigned int minutes = 0;
-
+bool stringcomplete = 0;
 long myTemp[10];
 long stageDuration[10];
 
@@ -54,25 +54,28 @@ void setup() {
   digitalWrite(rightbutton, LOW);
   digitalWrite(upbutton, LOW);
   digitalWrite(downbutton, LOW);
-
+  pushButton(menubutton, 1);
+  delay(2000);
+  goHome();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("How many stages?");
+  Serial.println("How many stages?");
+
   numSteps = getNumber(1);
   //numSteps = 5;
 
   for (int i = 1; i <= numSteps; i++) {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Setpoint for stg ");
-    lcd.print(i);
+    Serial.print("Setpoint for stg ");
+    Serial.println(i);
     myTemp[i] = getNumber(3);
     //myTemp[i] = 2*i;
 
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Duration (mins) for stg ");
-    lcd.print(i);
+    Serial.print("Duration (mins) for stg ");
+    Serial.println(i);
     stageDuration[i] = getNumber(3) * 20000;
     //stageDuration[i] = 20000;
   }
@@ -81,6 +84,7 @@ void setup() {
 }
 
 void loop() {
+  goHome();
   // put your main code here, to run repeatedly:
   for (int i = 1; i <= numSteps; i++) {
     
@@ -89,18 +93,18 @@ void loop() {
     if (i > 1) {
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("Changing by ");
-      lcd.print(myTemp[i] - myTemp[i - 1]);
+      Serial.print("Changing by ");
+      Serial.println(myTemp[i] - myTemp[i - 1]);
       changeSetPoint(myTemp[i] - myTemp[i - 1]);
     }
 
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Starting stage ");
-    lcd.print(i);
+    Serial.print("Starting stage ");
+    Serial.println(i);
     lcd.setCursor(0,1);
-    lcd.print("Temp ");
-    lcd.print(myTemp[i]);
+    Serial.print("Temp ");
+    Serial.println(myTemp[i]);
     Serial.print("   Duration ");
     Serial.println(stageDuration[i]);
     stageStart = millis();
@@ -112,15 +116,15 @@ void loop() {
       lcd.print(stageDuration[i]/1000);
     }
   }
-  digitalWrite(homebutton, HIGH);
-  digitalWrite(menubutton, HIGH);
-  digitalWrite(leftbutton, HIGH);
-  digitalWrite(rightbutton, HIGH);
-  digitalWrite(upbutton, HIGH);
-  digitalWrite(downbutton, HIGH);
+  digitalWrite(homebutton, LOW);
+  digitalWrite(menubutton, LOW);
+  digitalWrite(leftbutton, LOW);
+  digitalWrite(rightbutton, LOW);
+  digitalWrite(upbutton, LOW);
+  digitalWrite(downbutton, LOW);
     lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("DONE");
+  Serial.println("DONE");
   delay(9999999999999999999999);
 
 }
@@ -129,8 +133,8 @@ void changeSetPoint(int degrees) {
   Serial.println("Pushing menu");
   pushButton(menubutton, 1);
   Serial.println("Pushing right");
-  pushButton(rightbutton, 1);
-
+  pushButton(rightbutton, 3);
+  
   if (degrees > 0) {
     Serial.println("Pushing up");
     pushButton(upbutton, degrees);
@@ -151,17 +155,17 @@ void pushButton(int button, int times) {
   for (int i = 1; i <= times; i++) {
     long time1 = millis();
     Serial.println("PUSH!");
-    while (millis() < time1 + 250) {
+    while (millis() < time1 + 200) {
       digitalWrite(button, HIGH);
 
     }
-    while (millis() < time1 + 500) {
+    while (millis() < time1 + 1500) {
       digitalWrite(button, LOW);
     }
   }
 }
 
-long getNumber(unsigned int digits) {
+/*long getNumber(unsigned int digits) {
   long digit[4] = {0, 0, 0, 0};
 
   lcd.setCursor(0,1);
@@ -201,14 +205,14 @@ long getNumber(unsigned int digits) {
         digit[i]--;
         Serial.print(digit[i]);
         delay(150);
-      }*/
+      }
     }
     delay(250);
   }
   /*Serial.println(digit[1]);
   Serial.println(digit[2]);
   Serial.println(digit[3]);
-  */
+  
   Serial.print("3: ");
   Serial.println(digit[3]);
   Serial.print("2: ");
@@ -219,5 +223,36 @@ long getNumber(unsigned int digits) {
   //Serial.print("RETURNIN!!! ");
   Serial.println(returnval);
   return returnval;
-}
+}*/
 
+unsigned long getNumber(int numberofdigits) {
+Serial.println(numberofdigits);
+stringcomplete = 0;
+char number[numberofdigits];
+unsigned long returnval;
+char incomingByte;
+//Serial.flush();
+  while (!stringcomplete) {
+
+while (Serial.available() > 0) {
+  returnval = 0;
+  while(1) {
+    incomingByte = Serial.read();
+    if (incomingByte == 10) break;
+    if (incomingByte == -1) continue;
+    returnval *= 10;
+    returnval = ((incomingByte -48)+returnval);
+      }
+      stringcomplete = 1;
+      Serial.println(returnval);
+      return returnval;
+      
+}
+  }
+returnval = atol(number);
+Serial.println(returnval);
+stringcomplete = 1;
+return returnval;
+
+
+}
