@@ -22,6 +22,7 @@
 
 
 long numSteps = 0;
+long initialtemp;
 unsigned int hours = 0;
 unsigned int minutes = 0;
 bool stringcomplete = 0;
@@ -59,6 +60,8 @@ void setup() {
   goHome();
   lcd.clear();
   lcd.setCursor(0, 0);
+  Serial.println("What's the current temperature on the Honeywell?");
+  initialtemp=getNumber(3);
   Serial.println("How many stages?");
 
   numSteps = getNumber(1);
@@ -79,6 +82,8 @@ void setup() {
     stageDuration[i] = getNumber(3) * 20000;
     //stageDuration[i] = 20000;
   }
+Serial.println("Initial calibration");
+changeSetPoint(myTemp[1]-initialtemp);
 
   startTime = millis();
 }
