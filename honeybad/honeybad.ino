@@ -55,12 +55,11 @@ void setup() {
   digitalWrite(rightbutton, LOW);
   digitalWrite(upbutton, LOW);
   digitalWrite(downbutton, LOW);
-  pushButton(menubutton, 1);
-  delay(2000);
   goHome();
   lcd.clear();
   lcd.setCursor(0, 0);
   Serial.println("What's the current temperature on the Honeywell?");
+  pushButton(rightbutton, 1);
   initialtemp=getNumber(3);
   Serial.println("How many stages?");
 
@@ -79,7 +78,7 @@ void setup() {
     lcd.setCursor(0, 0);
     Serial.print("Duration (mins) for stg ");
     Serial.println(i);
-    stageDuration[i] = getNumber(3) * 20000;
+    stageDuration[i] = getNumber(3) * 60000;
     //stageDuration[i] = 20000;
   }
 Serial.println("Initial calibration");
@@ -129,12 +128,13 @@ void loop() {
   digitalWrite(downbutton, LOW);
     lcd.clear();
   lcd.setCursor(0, 0);
+  digitalWrite(13, HIGH);
   Serial.println("DONE");
   delay(9999999999999999999999);
 
 }
 
-void changeSetPoint(int degrees) {
+void changeSetPoint(long degrees) {
   Serial.println("Pushing menu");
   pushButton(menubutton, 1);
   Serial.println("Pushing right");
@@ -152,19 +152,19 @@ void changeSetPoint(int degrees) {
 }
 
 void goHome() {
-  Serial.println("GOING HOME");
+  //Serial.println("GOING HOME");
   pushButton(homebutton, 1);
 }
 
 void pushButton(int button, int times) {
   for (int i = 1; i <= times; i++) {
     long time1 = millis();
-    Serial.println("PUSH!");
+    //Serial.println("PUSH!");
     while (millis() < time1 + 200) {
       digitalWrite(button, HIGH);
 
     }
-    while (millis() < time1 + 1500) {
+    while (millis() < time1 + 500) {
       digitalWrite(button, LOW);
     }
   }
@@ -231,15 +231,17 @@ void pushButton(int button, int times) {
 }*/
 
 unsigned long getNumber(int numberofdigits) {
-Serial.println(numberofdigits);
+//Serial.println(numberofdigits);
 stringcomplete = 0;
 char number[numberofdigits];
 unsigned long returnval;
 char incomingByte;
 //Serial.flush();
+
   while (!stringcomplete) {
 
 while (Serial.available() > 0) {
+  
   returnval = 0;
   while(1) {
     incomingByte = Serial.read();
