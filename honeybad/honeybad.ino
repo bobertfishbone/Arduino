@@ -58,7 +58,7 @@ void setup() {
   goHome();
   lcd.clear();
   lcd.setCursor(0, 0);
-  Serial.println("What's the current temperature on the Honeywell?");
+  Serial.println("What's the current setpoint on the Honeywell?");
   pushButton(rightbutton, 1);
   initialtemp=getNumber(3);
   Serial.println("How many stages?");
