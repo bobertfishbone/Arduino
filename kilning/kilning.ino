@@ -77,19 +77,20 @@ void loop() {
 
   }
 
-  stepper.runToNewPosition(0);
+  //stepper.runToNewPosition(0);
 
   myMotor->release();
   Serial.println("done");
   delay(999999999999999999);
 }
 
-unsigned long getNumber(int numberofdigits) {
+long getNumber(int numberofdigits) {
   //Serial.println(numberofdigits);
   stringcomplete = 0;
-  char number[numberofdigits];
-  unsigned long returnval;
+  char number[numberofdigits+1];
+  long returnval;
   char incomingByte;
+  bool negative = false;
   //Serial.flush();
 
   while (!stringcomplete) {
@@ -101,19 +102,30 @@ unsigned long getNumber(int numberofdigits) {
         incomingByte = Serial.read();
         if (incomingByte == 10) break;
         if (incomingByte == -1) continue;
+        if (incomingByte == 45) {
+          negative = true;
+        }
+        else {
         returnval *= 10;
         returnval = ((incomingByte - 48) + returnval);
+        }
       }
       stringcomplete = 1;
       Serial.println(returnval);
-      return returnval;
+      if (negative) {
+        return returnval * -1;
+      }
+      else return returnval;
 
     }
   }
   returnval = atol(number);
   Serial.println(returnval);
   stringcomplete = 1;
-  return returnval;
+  if (negative) {
+        return returnval * -1;
+      }
+      else return returnval;
 
 
 }
